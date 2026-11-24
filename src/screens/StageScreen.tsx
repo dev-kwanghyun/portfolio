@@ -24,12 +24,31 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
         </button>
       </div>
 
-      <p className="mt-8 text-center text-xs text-muted">
-        PROLOGUE · {prologue.company} ({prologue.period}) · {prologue.desc}
-      </p>
-
-      <ol className="mt-6 space-y-8">
-        {worlds.map((w) => (
+      {/* 최신 WORLD가 위, 오래된 WORLD가 아래. 맨 위는 아직 클리어하지 못한 다음 스테이지 */}
+      <ol className="mt-8 space-y-8">
+        <li className="pixel-panel border-0 p-5">
+          <div className="flex flex-wrap items-baseline gap-x-3">
+            <span className="text-xs text-muted">WORLD {nextWorld}</span>
+            <span className="font-pixel-title text-xl text-gold">???</span>
+            <span className="anim-blink ml-auto bg-hp px-2 text-xs">NEW</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRecruit(true)}
+            className="pixel-btn mt-4 flex w-full flex-col items-center gap-3 bg-night! p-6 text-center sm:flex-row sm:text-left"
+          >
+            <span className="grid size-16 shrink-0 place-items-center bg-panel-2 text-3xl text-gold" aria-hidden>
+              ?
+            </span>
+            <span className="flex-1">
+              <span className="block text-xs text-gold">STAGE {nextWorld}-1 · NOT CLEARED</span>
+              <span className="mt-1 block text-lg">당신의 회사</span>
+              <span className="mt-1 block text-xs text-muted">아직 아무도 공략하지 않은 스테이지입니다</span>
+            </span>
+            <span className="text-sm text-gold">도전하기 ▶</span>
+          </button>
+        </li>
+        {[...worlds].reverse().map((w) => (
           <li key={w.company} className="pixel-panel p-5">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span className="text-xs text-muted">WORLD {w.chapter}</span>
@@ -79,30 +98,11 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
           </li>
         ))}
 
-        {/* 아직 클리어하지 못한 다음 스테이지 */}
-        <li className="pixel-panel border-0 p-5">
-          <div className="flex flex-wrap items-baseline gap-x-3">
-            <span className="text-xs text-muted">WORLD {nextWorld}</span>
-            <span className="font-pixel-title text-xl text-gold">???</span>
-            <span className="anim-blink ml-auto bg-hp px-2 text-xs">NEW</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setRecruit(true)}
-            className="pixel-btn mt-4 flex w-full flex-col items-center gap-3 bg-night! p-6 text-center sm:flex-row sm:text-left"
-          >
-            <span className="grid size-16 shrink-0 place-items-center bg-panel-2 text-3xl text-gold" aria-hidden>
-              ?
-            </span>
-            <span className="flex-1">
-              <span className="block text-xs text-gold">STAGE {nextWorld}-1 · NOT CLEARED</span>
-              <span className="mt-1 block text-lg">당신의 회사</span>
-              <span className="mt-1 block text-xs text-muted">아직 아무도 공략하지 않은 스테이지입니다</span>
-            </span>
-            <span className="text-sm text-gold">도전하기 ▶</span>
-          </button>
-        </li>
       </ol>
+
+      <p className="mt-8 text-center text-xs text-muted">
+        PROLOGUE · {prologue.company} ({prologue.period}) · {prologue.desc}
+      </p>
 
       {recruit && <RecruitDialog onClose={() => setRecruit(false)} />}
     </section>
