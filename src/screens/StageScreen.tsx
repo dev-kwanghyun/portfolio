@@ -8,7 +8,42 @@ type Props = { onOpenStage: (id: string) => void; onOpenSummary: () => void }
 
 export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
   const [recruit, setRecruit] = useState(false)
+  const [order, setOrder] = useState<'recent' | 'oldest'>('recent')
   const nextWorld = worlds.length + 1
+  const recent = order === 'recent'
+  const ordered = recent ? [...worlds].reverse() : worlds
+
+  // 아직 클리어하지 못한 다음 스테이지. 최신순이면 맨 위, 오래된순이면 맨 아래에 둔다.
+  const nextStage = (
+    <li className="pixel-panel border-0 p-5">
+      <div className="flex flex-wrap items-baseline gap-x-3">
+        <span className="text-xs text-muted">WORLD {nextWorld}</span>
+        <span className="font-pixel-title text-xl text-gold">???</span>
+        <span className="anim-blink ml-auto bg-hp px-2 text-xs">NEW</span>
+      </div>
+      <button
+        type="button"
+        onClick={() => setRecruit(true)}
+        className="pixel-btn mt-4 flex w-full flex-col items-center gap-3 bg-night! p-6 text-center sm:flex-row sm:text-left"
+      >
+        <span className="grid size-16 shrink-0 place-items-center bg-panel-2 text-3xl text-gold" aria-hidden>
+          ?
+        </span>
+        <span className="flex-1">
+          <span className="block text-xs text-gold">STAGE {nextWorld}-1 · NOT CLEARED</span>
+          <span className="mt-1 block text-lg">당신의 회사</span>
+          <span className="mt-1 block text-xs text-muted">아직 아무도 공략하지 않은 스테이지입니다</span>
+        </span>
+        <span className="text-sm text-gold">도전하기 ▶</span>
+      </button>
+    </li>
+  )
+
+  const prologueLine = (
+    <p className="text-center text-xs text-muted">
+      PROLOGUE · {prologue.company} ({prologue.period}) · {prologue.desc}
+    </p>
+  )
 
   return (
     <section aria-labelledby="stage-title">
@@ -24,31 +59,31 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
         </button>
       </div>
 
-      {/* 최신 WORLD가 위, 오래된 WORLD가 아래. 맨 위는 아직 클리어하지 못한 다음 스테이지 */}
-      <ol className="mt-8 space-y-8">
-        <li className="pixel-panel border-0 p-5">
-          <div className="flex flex-wrap items-baseline gap-x-3">
-            <span className="text-xs text-muted">WORLD {nextWorld}</span>
-            <span className="font-pixel-title text-xl text-gold">???</span>
-            <span className="anim-blink ml-auto bg-hp px-2 text-xs">NEW</span>
-          </div>
+      <div className="mt-8 flex items-center justify-end gap-2 text-xs" role="group" aria-label="정렬">
+        <span className="text-muted">정렬</span>
+        {(
+          [
+            ['recent', '최신순'],
+            ['oldest', '오래된순'],
+          ] as const
+        ).map(([key, label]) => (
           <button
+            key={key}
             type="button"
-            onClick={() => setRecruit(true)}
-            className="pixel-btn mt-4 flex w-full flex-col items-center gap-3 bg-night! p-6 text-center sm:flex-row sm:text-left"
+            aria-pressed={order === key}
+            onClick={() => setOrder(key)}
+            className={`pixel-focus px-2 py-1 ${order === key ? 'bg-mp text-ink' : 'bg-panel text-muted hover:text-ink'}`}
           >
-            <span className="grid size-16 shrink-0 place-items-center bg-panel-2 text-3xl text-gold" aria-hidden>
-              ?
-            </span>
-            <span className="flex-1">
-              <span className="block text-xs text-gold">STAGE {nextWorld}-1 · NOT CLEARED</span>
-              <span className="mt-1 block text-lg">당신의 회사</span>
-              <span className="mt-1 block text-xs text-muted">아직 아무도 공략하지 않은 스테이지입니다</span>
-            </span>
-            <span className="text-sm text-gold">도전하기 ▶</span>
+            {label}
           </button>
-        </li>
-        {[...worlds].reverse().map((w) => (
+        ))}
+      </div>
+
+      {!recent && <div className="mt-4">{prologueLine}</div>}
+
+      <ol className="mt-4 space-y-8">
+        {recent && nextStage}
+        {ordered.map((w) => (
           <li key={w.company} className="pixel-panel p-5">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span className="text-xs text-muted">WORLD {w.chapter}</span>
@@ -98,11 +133,10 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
           </li>
         ))}
 
+        {!recent && nextStage}
       </ol>
 
-      <p className="mt-8 text-center text-xs text-muted">
-        PROLOGUE · {prologue.company} ({prologue.period}) · {prologue.desc}
-      </p>
+      {recent && <div className="mt-8">{prologueLine}</div>}
 
       {recruit && <RecruitDialog onClose={() => setRecruit(false)} />}
     </section>
