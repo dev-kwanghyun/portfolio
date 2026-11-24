@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { prologue, profile } from '../data/resume'
 import { stages, worlds } from '../game'
 import { Sprite } from '../pixel/Sprite'
-import { hero } from '../pixel/sprites'
+import { hero, sword } from '../pixel/sprites'
+import { bosses } from '../components/bosses'
 
 type Props = { onOpenStage: (id: string) => void; onOpenSummary: () => void }
 
@@ -97,23 +98,38 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {stages
                 .filter((s) => s.region === w)
-                .map((s) => (
-                  <li key={s.quest.id}>
-                    <button
-                      type="button"
-                      onClick={() => onOpenStage(s.quest.id)}
-                      className="pixel-btn relative flex h-full w-full flex-col items-start gap-2 p-3 text-left"
-                    >
-                      <span className="flex w-full items-center gap-2 text-xs">
-                        <span className="text-gold">STAGE {s.code}</span>
-                        {s.quest.boss && <span className="bg-hp px-1 text-[10px] leading-4">BOSS</span>}
-                        <span className="ml-auto -rotate-6 border-2 border-leaf px-1 text-[10px] leading-4 text-leaf">CLEAR</span>
-                      </span>
-                      <span className="text-sm leading-6">{s.quest.title}</span>
-                      <span className="mt-auto text-xs text-muted">{s.quest.role}</span>
-                    </button>
-                  </li>
-                ))}
+                .map((s) => {
+                  const boss = s.quest.boss ? bosses[s.quest.boss] : undefined
+                  return (
+                    <li key={s.quest.id}>
+                      <button
+                        type="button"
+                        onClick={() => onOpenStage(s.quest.id)}
+                        className={`pixel-btn relative flex h-full w-full flex-col items-start gap-2 p-3 text-left ${boss ? 'boss-tile' : ''}`}
+                      >
+                        <span className="flex w-full items-center gap-2 text-xs">
+                          <span className="text-gold">STAGE {s.code}</span>
+                          {boss && <span className="bg-hp px-1.5 text-[11px] leading-5 text-ink">BOSS STAGE</span>}
+                          <span className="ml-auto -rotate-6 border-2 border-leaf px-1 text-[10px] leading-4 text-leaf">CLEAR</span>
+                        </span>
+                        <span className="flex w-full items-start gap-2">
+                          <span className="flex-1">
+                            <span className="block text-sm leading-6">{s.quest.title}</span>
+                            <span className="mt-1 block text-xs text-muted">{s.quest.role}</span>
+                          </span>
+                          {boss && <Sprite sprite={boss.sprite} scale={2} className="anim-bob shrink-0" title={boss.name} />}
+                        </span>
+                        {boss && (
+                          <span className="mt-auto flex w-full items-center gap-2 bg-night/60 px-2 py-1 text-xs text-gold">
+                            <Sprite sprite={sword} scale={2} />
+                            <span className="flex-1">{boss.name} 재도전 가능!</span>
+                            <span className="anim-blink">▶</span>
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  )
+                })}
             </ul>
 
             {w.sideQuests && (
