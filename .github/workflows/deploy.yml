@@ -24,7 +24,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      # 맥에서 만든 lock 파일에 리눅스용 선택 패키지가 빠져 있어 npm ci 대신 install을 쓴다.
+      - run: npm install --no-audit --no-fund
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
