@@ -34,15 +34,20 @@ export function SelectScreen({ initial, onSelect, onSkip, onSummary }: Props) {
         SELECT YOUR CHARACTER
       </h1>
       <p className="mt-2 text-xs text-muted">함께할 캐릭터를 선택하세요 · ← → 로 이동</p>
-      <p className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-muted">
-        바쁘시다면 프로젝트부터
-        <button type="button" onClick={onSkip} className="pixel-btn bg-panel! px-3 py-1 text-xs">
-          ▶▶ 스테이지 바로가기
-        </button>
-        <button type="button" onClick={onSummary} className="pixel-btn bg-panel! px-3 py-1 text-xs">
-          ☰ 전체 요약
-        </button>
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted">
+        <p className="flex items-center gap-2">
+          바쁘시다면 프로젝트부터
+          <button type="button" onClick={onSkip} className="pixel-btn bg-panel! px-3 py-1 text-xs">
+            ▶▶ 스테이지 바로가기
+          </button>
+        </p>
+        <p className="flex items-center gap-2">
+          한눈에 보고 싶으시다면
+          <button type="button" onClick={onSummary} className="pixel-btn bg-panel! px-3 py-1 text-xs">
+            ☰ 전체 요약
+          </button>
+        </p>
+      </div>
 
       <div className="mt-10 flex items-end justify-center gap-4 sm:gap-8" role="radiogroup" aria-label="캐릭터">
         {characters.map((c, i) => {

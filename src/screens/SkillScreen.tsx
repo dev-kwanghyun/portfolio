@@ -123,7 +123,12 @@ export function SkillScreen({ skills, subtitle, sprite, equipped, setEquipped, o
             ) : equipped.length > 0 ? (
               <p className="text-xs text-muted">장착한 슬롯이나 아래 목록을 누르면 상세 정보를 볼 수 있어요.</p>
             ) : (
-              <p className="pt-10 text-center text-sm text-muted">오른쪽에서 스킬을 골라 장착해 보세요</p>
+              <p className="pt-10 text-center text-sm text-muted">
+                {/* 넓은 화면에서는 보유 스킬이 오른쪽, 좁은 화면에서는 아래에 있다 */}
+                <span className="lg:hidden">아래</span>
+                <span className="hidden lg:inline">오른쪽</span>
+                {' 보유 스킬에서 골라 장착해 보세요'}
+              </p>
             )}
           </div>
 
