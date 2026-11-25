@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getCharacter } from './characters'
 import type { CharacterId } from './characters'
+import { CharacterContext } from './characterContext'
 import { findStage } from './game'
 import { SelectScreen } from './screens/SelectScreen'
 import { SkillScreen } from './screens/SkillScreen'
@@ -101,7 +102,9 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="flex-1">{screen}</main>
+      <main className="flex-1">
+        <CharacterContext value={character}>{screen}</CharacterContext>
+      </main>
 
       <footer className="mt-16 text-center text-xs text-muted">© {year} 김광현 · Built with React + Vite</footer>
     </div>

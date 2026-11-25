@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { CharacterContext } from '../characterContext'
+import { getCharacter } from '../characters'
+import type { CharacterId } from '../characters'
 import type { Quest } from '../data/resume'
 import { josa } from '../game'
 import { Sprite } from '../pixel/Sprite'
-import { hero, star } from '../pixel/sprites'
+import { star } from '../pixel/sprites'
 import type { Boss } from './bosses'
 
 type Props = {
@@ -24,7 +27,15 @@ const logStyle: Record<LogLine['by'], string> = {
 
 const COFFEE_REFILL = 60
 
+/** 도망가기를 눌렀을 때 캐릭터별 반응 */
+const fleeMessage = {
+  dev: { title: '개발자에겐 포기란 없어!', canStay: true },
+  social: { title: '그래, 술이나 먹으러 가자!', canStay: false },
+} as const
+
 export function BossBattle({ quest, boss, onClose }: Props) {
+  const character = useContext(CharacterContext)
+  const [fleeAsk, setFleeAsk] = useState(false)
   const total = quest.steps.length
   const [used, setUsed] = useState<number[]>([])
   // 한 턴의 메시지(내 공격 → 보스 반격 → 커피 수혈)를 줄 단위로 쌓는다
@@ -72,10 +83,17 @@ export function BossBattle({ quest, boss, onClose }: Props) {
   const hp = Math.max(0, 100 - Math.round((used.length / total) * 100))
   const won = used.length === total
 
+  // 이긴 뒤에는 바로 닫고, 싸우는 중에는 도망칠지 먼저 묻는다
+  const requestClose = () => (won ? onClose() : setFleeAsk(true))
+  const escapeRef = useRef(requestClose)
+  useEffect(() => {
+    escapeRef.current = fleeAsk ? () => setFleeAsk(false) : requestClose
+  })
+
   useEffect(() => {
     dialogRef.current?.querySelector<HTMLButtonElement>('button[data-skill]')?.focus()
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') escapeRef.current()
     }
     window.addEventListener('keydown', onKey)
     const { overflow } = document.body.style
@@ -84,7 +102,7 @@ export function BossBattle({ quest, boss, onClose }: Props) {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = overflow
     }
-  }, [onClose])
+  }, [])
 
   function castSkill(i: number) {
     if (used.includes(i) || won || bossTurn) return
@@ -109,19 +127,19 @@ export function BossBattle({ quest, boss, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-night/90 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-night/90 p-4" onClick={requestClose}>
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`보스전: ${boss.name}`}
-        className="pixel-panel mx-auto my-6 max-w-3xl p-4 sm:p-6"
+        className="pixel-panel relative mx-auto my-6 max-w-3xl p-4 sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs text-muted">BOSS BATTLE · {quest.title}</p>
           {!won && (
-            <button type="button" onClick={onClose} className="pixel-btn shrink-0 px-2 py-0.5 text-xs whitespace-nowrap" aria-label="보스전 닫기">
+            <button type="button" onClick={requestClose} className="pixel-btn shrink-0 px-2 py-0.5 text-xs whitespace-nowrap" aria-label="보스전 닫기">
               ✕ 도망가기
             </button>
           )}
@@ -131,7 +149,7 @@ export function BossBattle({ quest, boss, onClose }: Props) {
         <div className="relative mt-4 grid grid-cols-[auto_1fr] items-end gap-4 bg-[linear-gradient(#262a52_0_70%,#1b1d3a_70%)] px-4 pt-6 pb-4 sm:px-10">
           <div className="relative flex flex-col items-center">
             <div key={heroHitKey} className={heroHitKey ? 'anim-hit' : 'anim-bob'}>
-              <Sprite sprite={hero} scale={5} title="개발자 캐릭터" />
+              <Sprite sprite={getCharacter(character).sprite} scale={5} title={`${getCharacter(character).job} 캐릭터`} />
             </div>
             {popups
               .filter((p) => p.target === 'hero')
@@ -231,6 +249,41 @@ export function BossBattle({ quest, boss, onClose }: Props) {
             </div>
           </div>
         )}
+
+        {fleeAsk && <FleeDialog character={character} onStay={() => setFleeAsk(false)} onFlee={onClose} />}
+      </div>
+    </div>
+  )
+}
+
+function FleeDialog({ character, onStay, onFlee }: { character: CharacterId; onStay: () => void; onFlee: () => void }) {
+  const msg = fleeMessage[character]
+  const firstRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => firstRef.current?.focus(), [])
+
+  return (
+    <div className="absolute inset-0 z-10 grid place-items-center bg-night/80 p-4">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="flee-title" className="pixel-panel w-full max-w-sm p-6 text-center">
+        <Sprite sprite={getCharacter(character).sprite} scale={5} className="anim-bob mx-auto" />
+        <p id="flee-title" className="mt-4 font-pixel-title text-xl leading-8 text-gold">
+          {msg.title}
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-4">
+          {msg.canStay ? (
+            <>
+              <button ref={firstRef} type="button" onClick={onStay} className="pixel-btn px-5 py-2 text-sm">
+                확인
+              </button>
+              <button type="button" onClick={onFlee} className="pixel-btn bg-panel! px-4 py-2 text-xs text-muted">
+                그래도 도망가기
+              </button>
+            </>
+          ) : (
+            <button ref={firstRef} type="button" onClick={onFlee} className="pixel-btn px-5 py-2 text-sm">
+              확인
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
