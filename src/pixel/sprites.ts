@@ -92,6 +92,42 @@ export const hydra: SpriteDef = {
   ],
 }
 
+/** 우리가게 패키지 앱 개편의 보스: 소통 단절 데드라인 마왕 (새벽 4시를 가리키는 자명종) */
+export const overtime: SpriteDef = {
+  palette: {
+    k: OUTLINE,
+    R: '#b13e53',
+    w: '#f4f4f4',
+    g: '#ffcd75',
+    e: '#e43b44',
+    m: '#5d275d',
+  },
+  rows: [
+    '..kk...........kk...',
+    '.kggk...kkkk..kggk..',
+    '.kggk....kk...kggk..',
+    '..kkk..kkkkkk.kkk...',
+    '.....kkRRRRRRkk.....',
+    '....kRRRwwwwRRRk....',
+    '...kRRwwwkwwwwRRk...',
+    '..kRRkkwwkwwwkkRRk..',
+    '..kRRwwkwwwwkwwRRk..',
+    '..kRweewwwwwweewRk..',
+    '.kRRwwwwwkwwwwwwRRk.',
+    '.kRRwwwwwkkwwwwwRRk.',
+    '.kRRwwwwwwwkkwwwRRk.',
+    '..kRwwwwwwwwwkwwRk..',
+    '..kRRwwwwwwwwwwRRk..',
+    '..kRRwkmkmkmkmwRRk..',
+    '...kRRkwwwwwwkRRk...',
+    '....kRRRwwwwRRRk....',
+    '.....kkRRRRRRkk.....',
+    '......kkkkkkkk......',
+    '....kkk......kkk....',
+    '....................',
+  ],
+}
+
 export const sword: SpriteDef = {
   palette: { w: '#f4f4f4', s: '#a3a7c9', g: '#ffcd75', k: OUTLINE },
   rows: ['......sw', '.....sws', '....sws.', 'g..sws..', '.gsws...', '..gs....', '.g.g....', 'g.......'],

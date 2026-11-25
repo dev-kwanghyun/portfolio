@@ -1,7 +1,7 @@
 // Notion 이력서(FrontEnd 개발자 김광현)에서 옮겨온 콘텐츠.
 // 사이트 문구를 고칠 때는 이 파일만 수정하면 된다.
 
-export type BossId = 'hydra'
+export type BossId = 'hydra' | 'overtime'
 
 export type Quest = {
   id: string
@@ -177,6 +177,7 @@ export const regions: Region[] = [
         ],
         lesson:
           '"빠르게 만드는 것"과 "함께 만들 수 있게 하는 것"은 전혀 다른 문제입니다. 초기에 구조와 기준을 먼저 잡아두니 여러 개발자가 동시에 작업해도 방향이 흔들리지 않았고, 처음 설계에 들인 시간이 이후 개발과 QA 속도로 돌아온다는 것을 배웠습니다.',
+        boss: 'overtime',
       },
     ],
   },
