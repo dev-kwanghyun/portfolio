@@ -4,6 +4,9 @@ import { stages, worlds } from '../game'
 import { Sprite } from '../pixel/Sprite'
 import { hero, sword } from '../pixel/sprites'
 import { bosses } from '../components/bosses'
+import { targetCompany, withRo } from '../targetCompany'
+
+const companyName = targetCompany ?? '당신의 회사'
 
 type Props = { onOpenStage: (id: string) => void; onOpenSummary: () => void }
 
@@ -32,7 +35,7 @@ export function StageScreen({ onOpenStage, onOpenSummary }: Props) {
         </span>
         <span className="flex-1">
           <span className="block text-xs text-gold">STAGE {nextWorld}-1 · NOT CLEARED</span>
-          <span className="mt-1 block text-lg">당신의 회사</span>
+          <span className="mt-1 block text-lg break-all">{companyName}</span>
           <span className="mt-1 block text-xs text-muted">아직 아무도 공략하지 않은 스테이지입니다</span>
         </span>
         <span className="text-sm text-gold">도전하기 ▶</span>
@@ -180,9 +183,9 @@ function RecruitDialog({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <Sprite sprite={hero} scale={7} className="anim-bob mx-auto" />
-        <p className="mt-5 text-xs text-gold">STAGE ??? · 당신의 회사</p>
+        <p className="mt-5 text-xs break-all text-gold">STAGE ??? · {companyName}</p>
         <h2 id="recruit-title" className="mt-3 font-pixel-title text-xl leading-9 sm:text-2xl">
-          당신의 회사로
+          <span className="break-all">{targetCompany ? withRo(targetCompany) : '당신의 회사로'}</span>
           <br />
           모험을 떠나고 싶습니다!
         </h2>
